@@ -27,26 +27,26 @@ async function getContentList(search){
       tableList.each((i, el)=>{
           let songIdData = $(el)
           .find("td:nth-child(3) div div a.btn.btn_icon_detail");
-          if(songIdData.hasOwnProperty('attr')){
+          if(songIdData !== undefined){
             songIdData = songIdData.attr('href');
             songIdData = songIdRegex.exec(songIdData)[0];
           }
 
           let artistData = $(el)
           .find("#artistName > a");
-          if(artistData.hasOwnProperty(text)){
+          if(artistData !== undefined ){
             artistData = artistData.text();
           }
 
           let titleData = $(el)
           .find("td:nth-child(3) div div a.fc_gray b");
-          if(titleData.hasOwnProperty(text)){
+          if(titleData!== undefined ){
             titleData = titleData.text();
           }
 
           let albumData = $(el)
           .find("td:nth-child(5) div div a");
-          if(albumData.hasOwnProperty(text)){
+          if(albumData!== undefined){
             albumData = albumData.text();
           }
 
@@ -66,6 +66,7 @@ async function getContentList(search){
 async function getContentDetail(songObject){
   try{
     if(songObject == undefined) return;
+    else{
       const html = await getHtml(songObject.songId, true);
       const $ = cheerio.load(html.data);
       const imageUrl = $("#downloadfrm > div > div > div.thumb > a > img").attr('src');
@@ -80,6 +81,8 @@ async function getContentDetail(songObject){
           imageUrl : imageUrl,
           genre : genre
       }
+    }
+      
   }catch(e){
       console.error(e);
   }
@@ -113,10 +116,10 @@ export default function App() {
     const list = await getContentList(text);
     const data = await getContentDetail(list[0]);
     let play;
-    if(data.hasOwnProperty(songId)){
-      play = data.songId;
+    if(data !== undefined){
+      play = generatePlaylist(data.songId);
+      setText(play);
     }
-    setText(play);
   }
   return (
     <View style={styles.container}>
